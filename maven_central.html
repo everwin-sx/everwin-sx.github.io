@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+	<head>
+		<title>Everwin - The Walking Dev</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<a href="index.html" class="title">Everwin - The Walking Dev</a>
+				<nav>
+					<ul>
+						<li><a href="index.html">Bienvenue</a></li>
+						<li><a href="index.html#one"  class="active">Blog</a></li>
+						<li><a href="index.html#two">Qui sommes nous ?</a></li>
+					</ul>
+				</nav>
+			</header>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main" class="wrapper">
+						<div class="inner">
+							<h1 class="major">
+								Publication d'un projet sur Maven Central
+								<div class="post-infos">10/06/2019 - Julien</div>
+							</h1>
+
+
+							<!-- Text -->
+							<section>
+								<h2>Introduction</h2>
+								<p>
+									Lors de la création d'un projet open source il est important de mettre à disposition l'archive (artefact) à disposition des futurs développeurs.
+									Dans la communauté Java, il existe un acteur incontournable des archives : Maven Central qui répertorie tous les projets java et les met à disposition
+									des développeurs du monde entier grâce à son gestionnaire de dépendance maven.
+									Dans ce billet, nous allons vous décrire les différentes étapes nécessaires pour publier votre projet sur Maven Central et pour mettre en lignes vos prochaines releases rapidement.
+									Voici les principales étapes à suivre :
+									<ul>
+										<li>Créer le repository sur github</li>
+										<li>Créer un ticket Jira sur Sonatype</li>
+										<li>Générer une paire de clés de type OpenPGP</li>
+										<li>Configurer le projet</li>
+										<li>Publier le projet dans le repo Sonatype / Nexus</li>
+									</ul>
+								</p>
+							</section>
+							<section>
+								<h2>Création du repository sur Github</h2>
+								<p>Avant d'éffectuer cette opération, il est nécessaire de créer un compte sur github. Vous pouvez définir le nom que vous souhaitez si tant est qu'il n'est pas déjà utilisé.
+									Une fois le compte créé, cliquer sur le bouton New dans l'onglet Repositories de la page principale du compte pour créer le repository.
+									Remplir les informations nécessaires :<span class="image right"><img src="images/maven_central/create_repo.png" alt=""/></span>
+									<ul>
+										<li>Repository name: le nom de votre projet</li>
+										<li>Public or Private: Sélectionner l'option Public afin que les utilisateur de github puissent voir votre projet</li>
+										<li>Add .gitignore: Permet d'exclure des fichiers de github</li>
+										<li>Add a Licence: Sélectionner votre type de licence après avoir visité <a href="https://choosealicense.com/">https://choosealicense.com/</a></li>
+									</ul>
+									Le repository est maintenant disponible via l'url suivante : https://github.com/{nom-utilisateur}/{projet}.git.
+									Vous pouvez alors transférer votre projet sur github via une commande push depuis votre IDE ou depuis une ligne de commande git.
+								</p>
+								<p>
+									Pour plus de détails sur la création d'un compte, du repository vous pouvez consulter les pages d'aide de github :
+									<ul>
+										<li>Création du compte : <a href="https://help.github.com/en/articles/signing-up-for-a-new-github-account">https://help.github.com/en/articles/signing-up-for-a-new-github-account</a></li>
+										<li>Création du repo : <a href="https://help.github.com/en/articles/create-a-repo">https://help.github.com/en/articles/create-a-repo</a></li>
+										<li>Publication d'un projet existant : <a href="https://help.github.com/en/articles/adding-an-existing-project-to-github-using-the-command-line">https://help.github.com/en/articles/adding-an-existing-project-to-github-using-the-command-line</a></li>
+									</ul>
+								</p>
+							</section>
+							<section>
+								<h2>Création d'un ticket Jira sur Sonatype</h2>
+								<h3>Création d'un compte Sonatype</h3>
+								<p>Pour publier l'artefact sur maven Central, il est nécessaire de créer un compte dans leur Jira à l'adresse suivante :
+									<a href="https://issues.sonatype.org/secure/Signup!default.jspa">https://issues.sonatype.org/secure/Signup!default.jspa</a>.
+									Attention, il est important de conserver le login / mot de passe car ils seront utilisés par la suite.
+									Une fois le compte créé, vous pouvez vous rendre dans l'application sonatype pour visualiser les projets publiés en utilisant le login et le mot de passe précédents : <a href="https://oss.sonatype.org">https://oss.sonatype.org</a></p>
+								</p>
+								<h3>Création d'un ticket pour demander la création du repo chez Maven Central</h3>
+								<span class="image right"><img src="images/maven_central/sonatype_jira.png"></span>
+								<p>La création du repo se fait manuellement par les administrateur de Nexus. Toute demande de création doit se faire à l'aide d'une demande Jira de type "New Project".
+									Voici le lien qui vous conduira jusqu'au formulaire : <a href="https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134">https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134</a><br>
+									Saisir les informations concernant votre projet :
+									<ul>
+										<li>groupId : com.example</li>
+										<li>project url : https://github.com/{nom-utilisateur}/{projet}</li>
+										<li>SCM url : https://github.com/{nom-utilisateur}/{projet}.git</li>
+									</ul>
+									Ajouter votre demande en anglais, puis attendre... la validation se fait manuellement.
+									Attention toute fois à faire une demande conforme, à savoir que le package de votre projet doit être formé du nom de votre domaine ainsi que son extension inversée.
+									Par exemple, si vous souhaitez créer un repository avec le groupId : com.example vous devez disposer du nom de domaine example.com.
+									Il faudra sans doute confirmer l'appartenance du domaine en rajoutant une redirection du site web vers le projet github.
+								</p>
+							</section>
+							<section>
+								<h2>Génération d'une paire de clés OpenPGP</h2>
+								<p>Avant de publier l'artefact dans Maven Central, il est nécessaire de signer l'archive générée à l’aide du OpenPGP qui est un standard d'encryptage initialement prévu pour crypter des e-mail.
+									Ce cryptage consiste à créer une paire de clés public / privé, la clé publique sera alors publiée sur un serveur pour vérifier les échanges entre vous et le serveur Maven Central.</p>
+								<p>La création de cette paire de clés se fait à l'aide d'un outil comme gpg qui est disponible pour différents OS dont Windows à l'adresse suivante :
+									<a href="https://gpg4win.org/thanks-for-download.html">https://gpg4win.org/thanks-for-download.html</a></p>
+								<p>
+									Une fois gpg installé, on est en mesure de générer la paire de clés avec la commande suivante :
+									<pre><code>gpg --full-gen-key</code></pre>
+									Suivre les instruction en laissant les options par défaut, définir la passphrase sans espace et la conserver pour la suite, le nom du développeur et l'email.
+									Une fois la clé générée, celle-ci est affichée
+									<pre><code>--------------------------------------------------------
+sec   rsa2048 2019-01-05 [SC]
+      A75F5D09D2A161560F7E9BF0303C29BF7EB536D4     <- La clé est ici
+uid          [  ultime ] {nom-utilisateur} <{email-utilisateur}>
+ssb   rsa2048 2019-01-05 [E]</code></pre>
+									Il faut maintenant publier la clé sur les serveurs reconnus par Maven Central :
+									<pre><code>gpg --send-key A75F5D09D2A161760FEE8BF0303C29BF7EB536D4</code></pre>
+								</p>
+							</section>
+							<section>
+								<h2>Configuration du projet</h2>
+								<p>Avant de publier le projet dans Maven Central, il est nécessaire de modifier la configuration de celui-ci via le fichier pom.xml
+									pour construire le projet, générer les archives sources, la javadoc et lancer la signature de l'artefact</p>
+								<h3>Identification du projet</h3>
+								<p>Modifier le fichier pom.xml à l'aide des directives suivantes pour que Maven Central puisse identifier votre projet et le développeur :
+								<pre><code>
+&lt;organization&gt;
+&lt;name>{org-name}&lt;/name&gt;
+&lt;url>https://github.com/{nom-utilisateur}&lt;/url&gt;
+&lt;/organization&gt;
+&lt;developers&gt;
+    &lt;developer&gt;
+        &lt;name&gt;{nom-utilisateur}&lt;/name&gt;
+    &lt;/developer&gt;
+&lt;/developers&gt;
+							</code></pre>
+								</p>
+								<h3>Gestionnaire d'issues</h3>
+								<p>Modifier le fichier pom.xml à l'aide des directives suivantes pour indiquer où se trouve votre gestionnaire de bugs :
+								<pre><code>
+&lt;issueManagement&gt;
+&lt;system>GitHub&lt;/system&gt;
+&lt;url>https://github.com/{nom-utilisateur}/{project}/issues&lt;/url&gt;
+&lt;/issueManagement&gt;</code></pre>
+								</p>
+								<h3>Gestionnaire de sources</h3>
+								<p>Modifier le fichier pom.xml à l'aide des directives suivantes pour indiquer l'url du gestionnaire de source, à savoir git :
+								<pre><code>
+&lt;scm&gt;
+      &lt;url&gt;https://github.com/{nom-utilisateur}/{projet}&lt;/url&gt;
+      &lt;connection&gt;scm:git:git://github.com/{nom-utilisateur}/{projet}.git&lt;/connection&gt;
+      &lt;developerConnection&gt;scm:git:ssh://git@github.com:{nom-utilisateur}/{projet}.git&lt;/developerConnection&gt;
+    &lt;tag&gt;HEAD&lt;/tag&gt;
+&lt;/scm&gt;</code></pre>
+								</p>
+
+								<h3>Type de licence</h3>
+								<p>Modifier le fichier pom.xml à l'aide des directives suivantes pour indiquer le type de licence de votre projet.
+									Il est important de définir dans chacun de vos fichiers la déclaration de licence en adéquation avec celle indiquée dans votre repository, de plus votre projet doit contenir un fichier LICENSE contenant le détail de celle-ci.
+								<pre><code>
+&lt;licenses&gt;
+    &lt;license&gt;
+        &lt;name&gt;Apache License 2.0&lt;/name&gt;
+        &lt;url&gt;https://github.com/{nom-utilisateur}/{project}/blob/master/LICENSE.txt&lt;/url&gt;
+        &lt;distribution&gt;repo&lt;/distribution&gt;
+    &lt;/license&gt;
+&lt;/licenses&gt;</code></pre>
+								</p>
+								<h3>Deploiement dans Maven Central</h3>
+								<p>Modifier le fichier pom.xml à l'aide des directives suivantes pour indiquer les urls de publication de votre projet sur le serveur Maven Central :
+								<pre><code>
+&lt;distributionManagement&gt;
+	&lt;snapshotRepository&gt;
+		&lt;id&gt;ossrh&lt;/id&gt;
+		&lt;url&gt;https://oss.sonatype.org/content/repositories/snapshots&lt;/url&gt;
+	&lt;/snapshotRepository&gt;
+	&lt;repository&gt;
+		&lt;id&gt;ossrh&lt;/id&gt;
+		&lt;url&gt;https://oss.sonatype.org/service/local/staging/deploy/maven2/
+		&lt;/url&gt;
+	&lt;/repository&gt;
+&lt;/distributionManagement&gt;</code></pre>
+								</p>
+								<h3>Ajout des plugins</h3>
+								<p>Modifier le fichier pom.xml à l'aide des directives suivantes pour inclure les différents plugins pour préparer et construire votre projet :
+								<pre><code>
+&lt;plugin&gt;
+    &lt;artifactId&gt;maven-deploy-plugin&lt;/artifactId&gt;
+    &lt;version&gt;2.8.2&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;id&gt;default-deploy&lt;/id&gt;
+            &lt;phase&gt;deploy&lt;/phase&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;deploy&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;
+&lt;plugin&gt;
+    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+    &lt;artifactId&gt;maven-release-plugin&lt;/artifactId&gt;
+    &lt;version&gt;2.5.3&lt;/version&gt;
+    &lt;configuration&gt;
+        &lt;localCheckout&gt;true&lt;/localCheckout&gt;
+        &lt;pushChanges&gt;false&lt;/pushChanges&gt;
+        &lt;mavenExecutorId&gt;forked-path&lt;/mavenExecutorId&gt;
+        &lt;arguments&gt;-Dgpg.passphrase=${gpg.passphrase}&lt;/arguments&gt;
+    &lt;/configuration&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.maven.scm&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-scm-provider-gitexe&lt;/artifactId&gt;
+            &lt;version&gt;1.9.5&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/plugin&gt;
+&lt;plugin&gt;
+    &lt;groupId&gt;org.sonatype.plugins&lt;/groupId&gt;
+    &lt;artifactId&gt;nexus-staging-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;1.6.7&lt;/version&gt;
+    &lt;extensions&gt;true&lt;/extensions&gt;
+    &lt;configuration&gt;
+        &lt;serverId&gt;ossrh&lt;/serverId&gt;
+        &lt;nexusUrl&gt;https://oss.sonatype.org/&lt;/nexusUrl&gt;
+        &lt;autoReleaseAfterClose&gt;true&lt;/autoReleaseAfterClose&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;
+&lt;plugin&gt;
+    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+    &lt;artifactId&gt;maven-source-plugin&lt;/artifactId&gt;
+    &lt;version&gt;3.0.1&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;id&gt;attach-sources&lt;/id&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;jar&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+        &lt;execution&gt;
+            &lt;id&gt;attach-javadoc&lt;/id&gt;
+            &lt;goals /&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;
+</code></pre>
+								</p>
+								<h3>Ajout d'un profil pour signer l'artefact</h3>
+								<p>Modifier le fichier pom.xml à l'aide des directives suivantes pour indiquer à maven de signer l'archive avant de la publier :
+								<pre><code>
+&lt;profile&gt;
+	&lt;id&gt;release-sign-artifacts&lt;/id&gt;
+	&lt;activation&gt;
+		&lt;property&gt;
+			&lt;name&gt;performRelease&lt;/name&gt;
+			&lt;value&gt;true&lt;/value&gt;
+		&lt;/property&gt;
+	&lt;/activation&gt;
+	&lt;build&gt;
+		&lt;plugins&gt;
+			&lt;plugin&gt;
+				&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+				&lt;artifactId&gt;maven-gpg-plugin&lt;/artifactId&gt;
+				&lt;version&gt;1.6&lt;/version&gt;
+				&lt;executions&gt;
+					&lt;execution&gt;
+						&lt;id&gt;sign-artifacts&lt;/id&gt;
+						&lt;phase&gt;verify&lt;/phase&gt;
+						&lt;goals&gt;
+							&lt;goal&gt;sign&lt;/goal&gt;
+						&lt;/goals&gt;
+					&lt;/execution&gt;
+				&lt;/executions&gt;
+			&lt;/plugin&gt;
+		&lt;/plugins&gt;
+	&lt;/build&gt;
+&lt;/profile&gt;</code></pre>
+								</p>
+								<h3>Définition des informations d'authentification</h3>
+								<p>Modification du fichier settings.xml
+									Afin de masquer certaines informations nécessaires dans le fichier pom.xml, nous
+									allons créer / modifier le fichier settings.xml dans le répertoire {user}/.m2
+									pour ajouter les options suivantes :
+								<pre><code>
+&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd"&gt;
+  &lt;localRepository/&gt;
+  &lt;interactiveMode/&gt;
+  &lt;offline/&gt;
+  &lt;pluginGroups/&gt;
+  &lt;servers&gt;
+    &lt;server&gt;
+     &lt;id&gt;ossrh&lt;/id&gt;
+     &lt;username{sonatype-user}/username&gt;
+     &lt;password{sonatype-password}/password&gt;
+    &lt;/server&gt;
+  &lt;/servers&gt;
+  &lt;mirrors/&gt;
+  &lt;proxies/&gt;
+  &lt;profiles&gt;
+    &lt;profile&gt;
+     &lt;id&gt;ossrh&lt;/id&gt;
+     &lt;activation&gt;
+      &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+     &lt;/activation&gt;
+     &lt;properties&gt;
+      &lt;gpg.passphrase&gt;{THEPASSPHRASE}&lt;/gpg.passphrase&gt;
+     &lt;/properties&gt;
+    &lt;/profile&gt;
+  &lt;/profiles&gt;
+  &lt;activeProfiles/&gt;
+&lt;/settings&gt;</code></pre>
+								Les informations importantes à modifier sont les suivantes :
+								<ul>
+									<li>username : L'utilisateur créé dans le Jira sonatype</li>
+									<li>password : Le mot de passe de l'utilisateur</li>
+									<li>gpg.passphrase : La phrase utilisée pour générer la clé</li>
+								</ul>
+								</p>
+							</section>
+							<section>
+								<h2>Publication</h2>
+								<p>
+								Il est maintenant possible de lancer le déploiement du projet dans maven central avec les commandes suivantes :
+									<pre><code>
+mvn release:clean
+mvn release:prepare
+mvn release:perform
+									</code></pre>
+								Vous pouvez vérifier que le projet est bien publié sur le site de sonatype avec votre login / mot de passe :
+								<a href="https://oss.sonatype.org">https://oss.sonatype.org</a>. La mise en ligne ne sera effective qu'après avoir confirmé la publication en ajoutant un commentaire dans l'issue initiale sonatype.
+								</p>
+							</section>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Everwin. All rights reserved.</li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
