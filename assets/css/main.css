@@ -3511,7 +3511,7 @@ input, select, textarea {
 
 	#footer > .inner .menu {
 		font-size: 0.8em;
-		color: rgba(255, 255, 255, 0.15);
+		color: rgba(255, 255, 255, 0.65);
 	}
 
 	#header + #wrapper + #footer > .inner {
@@ -3903,16 +3903,18 @@ input, select, textarea {
 
 		}
 
-#header-logo {
-    background-image: url(../../images/everball.png);
-    background-size: 50px 50px;
-    width: 50px;
-    height: 50px;
-    right: 0px;
-    top: 0px;
+.logo {
+    text-align: right;
     position: absolute;
-    margin: 10px;
+    right: 4em;
 }
+
+@media screen and (max-width: 736px){
+    .logo {
+        display:none;
+    }
+}
+
 
 .post-infos{
     font-size:.4em;
